@@ -2948,6 +2948,10 @@ namespace {
     function glfwSwapInterval(int $interval) : void {}
     function glfwExtensionSupported(string $extension) : int {}
     function glfwVulkanSupported() : int {}
+    /**
+     * Returns the NSWindow pointer as an integer (macOS only).
+     */
+    function glfwGetCocoaWindow(GLFWwindow $window) : int {}
     function glfwGetGamepadAxes(int $joystick) : array {}
     function glfwGetGamepadButtons(int $joystick) : array {}
     function glShaderSource(int $shader, string $source) : void {}

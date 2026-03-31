@@ -31,6 +31,11 @@
 #include "phpglfw_math.h"
 #include <zend_API.h>
 
+#ifdef __APPLE__
+#define GLFW_EXPOSE_NATIVE_COCOA
+#include <GLFW/glfw3native.h>
+#endif
+
 /**
  * ----------------------------------------------------------------------------
  * PHPGlfw IPOs 
@@ -12172,11 +12177,34 @@ PHP_FUNCTION(glfwExtensionSupported)
 
 /**
  * glfwVulkanSupported
- */ 
+ */
 PHP_FUNCTION(glfwVulkanSupported)
 {
     RETURN_LONG(glfwVulkanSupported());
-} 
+}
+
+/**
+ * glfwGetCocoaWindow
+ * Returns the NSWindow pointer as an integer (macOS only).
+ */
+PHP_FUNCTION(glfwGetCocoaWindow)
+{
+#ifdef __APPLE__
+    zval *window_zval;
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "O", &window_zval, phpglfw_glfwwindow_ce) == FAILURE) {
+        return;
+    }
+    GLFWwindow* window = phpglfw_glfwwindowptr_from_zval_ptr(window_zval);
+    if (!window) {
+        zend_throw_error(NULL, "GLFWwindow is NULL");
+        return;
+    }
+    id nswindow = glfwGetCocoaWindow(window);
+    RETURN_LONG((zend_long)(uintptr_t)nswindow);
+#else
+    zend_throw_error(NULL, "glfwGetCocoaWindow() is only available on macOS");
+#endif
+}
 
 /**
  * glfwGetGamepadAxes
